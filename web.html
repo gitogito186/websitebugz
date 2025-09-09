@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ATTACK MENU</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      color: #e0b3ff;
+      text-align: center;
+      height: 100vh;
+      background: #000; /* hitam polos */
+    }
+
+    .container {
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    input, button {
+      display: block;
+      margin: 15px auto;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      width: 80%;
+      font-size: 1rem;
+      outline: none;
+      background: #1a1a1a;
+      color: #e0b3ff;
+    }
+
+    button {
+      background: #a100ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #7a00cc;
+      transform: scale(1.05);
+    }
+
+    .notif {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a1a;
+      border: 2px solid #a100ff;
+      padding: 20px 30px;
+      border-radius: 12px;
+      color: #00ff88;
+      font-size: 1.2rem;
+      font-weight: bold;
+      z-index: 999;
+      box-shadow: 0 0 15px #a100ff;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -60%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    /* Attack menu hidden dulu */
+    #attackMenu { display: none; }
+
+    /* Tombol bug */
+    .bug-btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 25px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      background: #a100ff;
+      transition: 0.3s;
+      box-shadow: 0 0 10px #a100ff;
+    }
+    .bug-btn:hover {
+      background: #7a00cc;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Box -->
+  <div id="loginBox" class="container">
+    <h1>🔒 Secure Login</h1>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+    <p id="loginResult"></p>
+  </div>
+
+  <!-- Attack Menu -->
+  <div id="attackMenu" class="container">
+    <h1>⚡ Attack Menu ⚡</h1>
+    <p>Masukkan Target</p>
+    <input type="text" id="target" placeholder="Target number / IP / Host">
+
+    <!-- Bug Buttons -->
+    <div>
+      <button class="bug-btn" onclick="sendBug('Force Close')">⚡ Force Close</button>
+      <button class="bug-btn" onclick="sendBug('Delay')">⏳ Delay</button>
+      <button class="bug-btn" onclick="sendBug('Blank')">⬜ Blank</button>
+      <button class="bug-btn" onclick="sendBug('Freeze')">❄️ Freeze</button>
+    </div>
+  </div>
+
+  <!-- Notif popup -->
+  <div class="notif" id="notifBox"></div>
+
+  <script>
+    // Ganti link GitHub JSON user database
+    const DB_URL = "https://raw.githubusercontent.com/gitogito186/apibug-/refs/heads/main/apibug.js";
+    const BUG_API_ENDPOINT = "http://152.42.214.15:2008/acap?"; 
+
+    const loginBtn = document.getElementById("loginBtn");
+    const loginResult = document.getElementById("loginResult");
+    const loginBox = document.getElementById("loginBox");
+    const attackMenu = document.getElementById("attackMenu");
+    const notifBox = document.getElementById("notifBox");
+
+    function showNotif(message) {
+      notifBox.innerHTML = message;
+      notifBox.style.display = "block";
+      setTimeout(() => notifBox.style.display = "none", 3000);
+    }
+
+    // Fetch user data
+    async function fetchUsers() {
+      try {
+        const response = await fetch(DB_URL);
+        if (!response.ok) throw new Error("Gagal fetch database");
+        return await response.json();
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    }
+
+    // Login system
+    loginBtn.addEventListener("click", async () => {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const users = await fetchUsers();
+
+      const user = users.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        loginResult.textContent = "✅ Login Success!";
+        loginResult.style.color = "lime";
+        loginBox.style.display = "none";
+        attackMenu.style.display = "block";
+      } else {
+        loginResult.textContent = "❌ Invalid username or password!";
+        loginResult.style.color = "red";
+      }
+    });
+
+    // Fungsi tombol bug
+    function sendBug(type) {
+      const target = document.getElementById("target").value || "Unknown";
+      showNotif("☠️ Success Send Bug (" + type + ")<br>Target: " + target);
+    }
+  </script>
+</body>
+  </html>
